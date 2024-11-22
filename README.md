@@ -42,7 +42,7 @@ $n⎋~ (Push the name n and expand it)
 
 ```
 ` (Body of fib)
-    $depth⎋. (Take the argument pushed before this quote and name it d)
+    $depth⎋. (Take the argument pushed before this quote and name it depth)
     `#1⎋⎋ (Quoted 1, falsy branch of the ternary)
     ` (Quoted calls to fib, truthy branch of the ternary)
         $depth⎋~#1⎋-$fib⎋~~ (Fib with depth-1)
@@ -53,7 +53,7 @@ $n⎋~ (Push the name n and expand it)
     ~ (Unquote the branch result)
     $depth⎋_ (Dispose of depth)
 ⎋ $fib⎋. (Name this quote fib)
-#10⎋ $f⎋~~ (Call fib with 10)
+#10⎋ $fib⎋~~ (Call fib with 10)
 ```
 
 ## Informal specification
