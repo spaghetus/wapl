@@ -1,4 +1,11 @@
-use std::{collections::HashMap, default, ops::DerefMut, process::Command, str::FromStr};
+use std::{
+    collections::HashMap,
+    default,
+    ops::DerefMut,
+    process::Command,
+    str::FromStr,
+    sync::mpsc::{Sender, SyncSender},
+};
 
 use strum::EnumString;
 
@@ -51,6 +58,7 @@ pub struct State {
     pub ctrl: bool,
     pub alt: bool,
     pub shift: bool,
+    pub send_intervening_states: Option<SyncSender<State>>,
 }
 
 impl State {
@@ -126,15 +134,27 @@ impl State {
             }
             c => unimplemented!("{c:#?}"),
         }
+        if let Some(sender) = &self.send_intervening_states {
+            if sender.send(self.clone()).is_err() {
+                // The receiver has been dropped, so we should stop running.
+                return;
+            }
+        }
         if !input.is_whitespace() {
             // eprintln!("state: {input} -> {self:#?}");
             if self.mode == Mode::Command {
-                while self.eval() {}
+                while self.eval() {
+                    if let Some(sender) = &self.send_intervening_states {
+                        if sender.send(self.clone()).is_err() {
+                            // The receiver has been dropped, so we should stop running.
+                            return;
+                        }
+                    }
+                }
             }
         }
     }
     pub fn eval(&mut self) -> bool {
-        eprintln!("evaluating: {:#?}", self.stack);
         match self.stack.as_mut_slice() {
             // Arithmetic
             [.., Datum::Number(lhs), Datum::Number(rhs), Datum::Keyword(Keyword::Add)] => {
