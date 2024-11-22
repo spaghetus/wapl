@@ -1,0 +1,13 @@
+pub const UARROW: char = '↑';
+pub const LARROW: char = '←';
+pub const RARROW: char = '→';
+pub const DARROW: char = '↓';
+pub const ESC: char = '⎋';
+pub const CTRL: char = '⎈';
+pub const ALT: char = '⎇';
+pub const SHIFT: char = '⇧';
+pub const NUMBER: char = '#';
+pub const NAME: char = '$';
+pub const STRING: char = '"';
+pub const QUOTE: char = '`';
+pub const FOLLOW: char = '~';
